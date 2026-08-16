@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { getCareerRecommendations, profileFromJson } from "@/lib/careers/matching";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "./actions";
@@ -91,6 +92,9 @@ export default async function DashboardPage() {
                     <dd className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold capitalize text-emerald-700">{career.currentDemand}</dd>
                   </div>
                 </dl>
+                <Link href={`/careers/${career.id}`} className="mt-6 inline-flex w-fit text-sm font-semibold text-indigo-600 transition hover:text-indigo-500">
+                  View career details →
+                </Link>
               </article>
             ))}
           </div>
