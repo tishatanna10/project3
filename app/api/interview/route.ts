@@ -46,25 +46,26 @@ export async function POST(request: Request) {
   if (typeof role !== "string" || !role.trim()) return Response.json({ error: "Choose or enter a target role." }, { status: 400 });
   if (!(resume instanceof File) || resume.size === 0 || !isSupportedResumeFile(resume)) return Response.json({ error: "Upload a PDF or DOCX resume." }, { status: 400 });
   if (resume.size > maximumResumeFileSize) return Response.json({ error: "Your resume must be 5 MB or smaller." }, { status: 400 });
-  if (!conversation.every(validExchange) || conversation.length > 7) return Response.json({ error: "Invalid interview transcript." }, { status: 400 });
+  if (!conversation.every(validExchange) || conversation.length > 10) return Response.json({ error: "Invalid interview transcript." }, { status: 400 });
 
-  if (conversation.length >= 7) return Response.json({ shouldEnd: true });
+  if (conversation.length >= 10) return Response.json({ shouldEnd: true });
 
   let resumeText: string;
   try { resumeText = (await extractResumeText(resume)).trim(); } catch { return Response.json({ error: "We could not read this resume. Please try another PDF or DOCX." }, { status: 422 }); }
   if (!resumeText) return Response.json({ error: "No readable text was found in this resume." }, { status: 422 });
 
-  let marketSnippets = suppliedSnippets.filter((item): item is string => typeof item === "string").slice(0, 5);
+  let marketSnippets = suppliedSnippets.filter((item): item is string => typeof item === "string").slice(0, 10);
   if (marketSnippets.length === 0) {
     try {
-      const response = await fetch("https://google.serper.dev/search", {
+      const search = (query: string) => fetch("https://google.serper.dev/search", {
         method: "POST",
-        headers: { "content-type": "application/json", "x-api-key": process.env.SERPER_API_KEY },
-        body: JSON.stringify({ q: `${role.trim()} common interview questions`, num: 5 }),
+        headers: { "content-type": "application/json", "x-api-key": process.env.SERPER_API_KEY! },
+        body: JSON.stringify({ q: query, num: 5 }),
       });
-      const data = (await response.json()) as SerperResult;
-      if (!response.ok) return Response.json({ error: data.message ?? "Unable to retrieve interview-market context." }, { status: 502 });
-      marketSnippets = (data.organic ?? []).flatMap((item) => item.snippet ? [`${item.title ?? "Interview result"}: ${item.snippet}`] : []).slice(0, 5);
+      const [interviewResponse, skillsResponse] = await Promise.all([search(`${role.trim()} common interview questions`), search(`${role.trim()} required skills 2026`)]);
+      const [interviewData, skillsData] = await Promise.all([interviewResponse.json() as Promise<SerperResult>, skillsResponse.json() as Promise<SerperResult>]);
+      if (!interviewResponse.ok || !skillsResponse.ok) return Response.json({ error: interviewData.message ?? skillsData.message ?? "Unable to retrieve interview-market context." }, { status: 502 });
+      marketSnippets = [...(interviewData.organic ?? []), ...(skillsData.organic ?? [])].flatMap((item) => item.snippet ? [`${item.title ?? "Market result"}: ${item.snippet}`] : []).slice(0, 10);
     } catch {
       return Response.json({ error: "Unable to retrieve interview-market context. Please try again." }, { status: 502 });
     }
@@ -73,7 +74,11 @@ export async function POST(request: Request) {
   const transcript = conversation.length
     ? conversation.map((item, index) => `Question ${index + 1}: ${item.question}\nCandidate answer: ${item.answer}`).join("\n\n")
     : "No earlier interview exchanges.";
-  const prompt = `Create exactly one next mock-interview question for a ${role.trim()} candidate. This is question ${conversation.length + 1} of 7. Ask only the question, without a preface, coaching, rubric, or multiple questions. Make it natural and specific. Use the resume for project/experience references when relevant, and use the previous answer to ask a useful follow-up where appropriate. Mix resume-specific and role-specific questions across the interview.\n\nJob description:\n${typeof jobDescription === "string" && jobDescription.trim() ? jobDescription.slice(0, 12_000) : "Not provided."}\n\nInterview-question inspiration from current search results:\n${marketSnippets.join("\n")}\n\nResume:\n${resumeText.slice(0, 45_000)}\n\nConversation so far:\n${transcript}`;
+  const prompt = `Create exactly one next mock-interview question for a ${role.trim()} candidate. This is question ${conversation.length + 1} of 10. Ask only the question, without a preface, coaching, rubric, or multiple questions.
+
+Make it natural, specific, and conversational. When there is a previous answer, default to a probing follow-up: after most answers, ask about a concrete claim, example, decision, metric, trade-off, tool, or detail the candidate just mentioned. Ask them to elaborate, justify it, or explain how it worked. Only move to an unrelated topic when the previous answer has been sufficiently explored or coverage requires it. Do not follow a fixed script.
+
+Keep grounding in the resume and role. Across the ten questions, mix resume-based experience questions, role-specific questions, and several questions grounded in the current market-relevant skills shown in the search results. Use the search evidence to ask about specific skills employers currently expect, not generic trends.\n\nJob description:\n${typeof jobDescription === "string" && jobDescription.trim() ? jobDescription.slice(0, 12_000) : "Not provided."}\n\nCurrent interview and required-skills search results:\n${marketSnippets.join("\n")}\n\nResume:\n${resumeText.slice(0, 45_000)}\n\nConversation so far:\n${transcript}`;
 
   try {
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
