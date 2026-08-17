@@ -1,10 +1,7 @@
-import mammoth from "mammoth";
-import { PDFParse } from "pdf-parse";
+import { extractResumeText, isSupportedResumeFile, maximumResumeFileSize } from "@/lib/resume/extract";
 import { createClient } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
-
-const maximumFileSize = 5 * 1024 * 1024;
 
 type SerperResult = {
   organic?: Array<{ title?: string; snippet?: string }>;
@@ -23,26 +20,6 @@ type ResumeAnalysis = {
   missingKeywords: string[];
   rewriteSuggestions: Array<{ original: string; improved: string; explanation: string }>;
 };
-
-function supportedResumeType(file: File) {
-  const name = file.name.toLowerCase();
-  return name.endsWith(".pdf") || name.endsWith(".docx");
-}
-
-async function extractResumeText(file: File) {
-  const buffer = Buffer.from(await file.arrayBuffer());
-
-  if (file.name.toLowerCase().endsWith(".pdf")) {
-    const parser = new PDFParse({ data: new Uint8Array(buffer) });
-    try {
-      return (await parser.getText()).text;
-    } finally {
-      await parser.destroy();
-    }
-  }
-
-  return (await mammoth.extractRawText({ buffer })).value;
-}
 
 function normalizeAnalysis(value: unknown): ResumeAnalysis | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
@@ -97,10 +74,10 @@ export async function POST(request: Request) {
   if (typeof role !== "string" || !role.trim()) {
     return Response.json({ error: "Choose or enter a target role." }, { status: 400 });
   }
-  if (!(resume instanceof File) || resume.size === 0 || !supportedResumeType(resume)) {
+  if (!(resume instanceof File) || resume.size === 0 || !isSupportedResumeFile(resume)) {
     return Response.json({ error: "Upload a PDF or DOCX resume." }, { status: 400 });
   }
-  if (resume.size > maximumFileSize) {
+  if (resume.size > maximumResumeFileSize) {
     return Response.json({ error: "Your resume must be 5 MB or smaller." }, { status: 400 });
   }
 

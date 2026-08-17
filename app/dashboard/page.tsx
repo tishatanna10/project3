@@ -44,7 +44,10 @@ export default async function DashboardPage() {
             </h1>
             <p className="mt-3 text-slate-600">You are signed in as {user.email}.</p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <Link href="/interview" className="rounded-lg border border-indigo-200 px-4 py-2 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-50 focus:outline-none focus:ring-3 focus:ring-indigo-100">
+              Practice interview
+            </Link>
             <Link href="/resume" className="rounded-lg border border-indigo-200 px-4 py-2 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-50 focus:outline-none focus:ring-3 focus:ring-indigo-100">
               Analyze resume
             </Link>
