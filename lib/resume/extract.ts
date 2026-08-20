@@ -1,5 +1,5 @@
 import mammoth from "mammoth";
-import { PDFParse } from "pdf-parse";
+import { extractText, getDocumentProxy } from "unpdf";
 
 export const maximumResumeFileSize = 5 * 1024 * 1024;
 
@@ -12,11 +12,11 @@ export async function extractResumeText(file: File) {
   const buffer = Buffer.from(await file.arrayBuffer());
 
   if (file.name.toLowerCase().endsWith(".pdf")) {
-    const parser = new PDFParse({ data: new Uint8Array(buffer) });
+    const pdf = await getDocumentProxy(new Uint8Array(buffer));
     try {
-      return (await parser.getText()).text;
+      return (await extractText(pdf, { mergePages: true })).text;
     } finally {
-      await parser.destroy();
+      await pdf.cleanup();
     }
   }
 
