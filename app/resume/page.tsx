@@ -2,6 +2,7 @@
 
 import { FormEvent, useMemo, useState } from "react";
 import { careers } from "@/lib/supabase/careers/career";
+import { Button } from "@/components/ui/Button";
 
 type ResumeAnalysis = {
   strengths: string[];
@@ -85,9 +86,9 @@ export default function ResumePage() {
 
             {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 sm:col-span-2" role="alert">{error}</p>}
             <div className="sm:col-span-2">
-              <button type="submit" disabled={!resume || !targetRole || isSubmitting} className="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700 focus:outline-none focus:ring-3 focus:ring-indigo-200 disabled:cursor-not-allowed disabled:opacity-50">
+              <Button type="submit" disabled={!resume || !targetRole || isSubmitting}>
                 {isSubmitting ? "Analyzing current market..." : "Analyze resume"}
-              </button>
+              </Button>
             </div>
           </form>
         </section>

@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/Button";
 
 type ChatMessage = {
   role: "user" | "assistant";
@@ -84,9 +85,9 @@ export default function ChatPage() {
           <div className="flex gap-3">
             <label className="sr-only" htmlFor="chat-message">Your message</label>
             <input id="chat-message" value={input} onChange={(event) => setInput(event.target.value)} placeholder="Ask a career question..." disabled={isSending} className="min-w-0 flex-1 rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-3 focus:ring-indigo-100 disabled:bg-slate-50" />
-            <button type="submit" disabled={!input.trim() || isSending} className="rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-indigo-700 focus:outline-none focus:ring-3 focus:ring-indigo-200 disabled:cursor-not-allowed disabled:opacity-50">
+            <Button type="submit" disabled={!input.trim() || isSending}>
               Send
-            </button>
+            </Button>
           </div>
         </form>
       </section>

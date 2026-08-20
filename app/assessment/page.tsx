@@ -7,6 +7,7 @@ import {
   type AssessmentQuestion,
 } from "@/lib/supabase/assesment/questions";
 import { createClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/Button";
 
 type AnswerValue = string | string[];
 type Profile = Record<string, number>;
@@ -256,12 +257,12 @@ export default function AssessmentPage() {
         {error && <p className="mt-5 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">{error}</p>}
 
         <div className="mt-8 flex items-center justify-between gap-4">
-          <button type="button" onClick={() => setCurrentIndex((index) => index - 1)} disabled={currentIndex === 0 || isSubmitting} className="rounded-lg px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40">
+          <Button type="button" variant="secondary" onClick={() => setCurrentIndex((index) => index - 1)} disabled={currentIndex === 0 || isSubmitting}>
             Back
-          </button>
-          <button type="button" onClick={() => void continueAssessment()} disabled={!canContinue || isSubmitting} className="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700 focus:outline-none focus:ring-3 focus:ring-indigo-200 disabled:cursor-not-allowed disabled:opacity-50">
+          </Button>
+          <Button type="button" onClick={() => void continueAssessment()} disabled={!canContinue || isSubmitting}>
             {isSubmitting ? "Saving..." : currentIndex === assessmentQuestions.length - 1 ? "Finish assessment" : "Continue"}
-          </button>
+          </Button>
         </div>
       </section>
     </main>

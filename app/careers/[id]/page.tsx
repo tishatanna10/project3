@@ -4,6 +4,7 @@ import { profileFromJson } from "@/lib/careers/matching";
 import { roadmaps } from "@/lib/roadmaps/roadmaps";
 import { careers } from "@/lib/supabase/careers/career";
 import { createClient } from "@/lib/supabase/server";
+import { Button } from "@/components/ui/Button";
 
 const roadmapLevels = ["beginner", "intermediate", "advanced"] as const;
 
@@ -149,9 +150,9 @@ export default async function CareerDetailPage({ params }: PageProps<"/careers/[
           {career.roadmapShUrl ? (
             <div className="mt-5 rounded-xl bg-indigo-50 p-5">
               <p className="text-sm leading-6 text-indigo-900">Explore this role&apos;s interactive roadmap and choose the topics you want to learn next.</p>
-              <a href={career.roadmapShUrl} target="_blank" rel="noreferrer" className="mt-4 inline-flex rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700">
+              <Button href={career.roadmapShUrl} target="_blank" rel="noreferrer" className="mt-4">
                 View Learning Roadmap on Roadmap.sh
-              </a>
+              </Button>
             </div>
           ) : roadmap ? (
             <div className="mt-6 space-y-8">

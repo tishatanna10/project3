@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/Button";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -72,13 +73,13 @@ export default function LoginPage() {
             </p>
           )}
 
-          <button
+          <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700 focus:outline-none focus:ring-3 focus:ring-indigo-200 disabled:cursor-not-allowed disabled:opacity-60"
+            className="w-full"
           >
             {isSubmitting ? "Signing in..." : "Sign in"}
-          </button>
+          </Button>
         </form>
 
         <p className="mt-6 text-center text-sm text-slate-600">

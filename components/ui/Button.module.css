@@ -1,0 +1,8 @@
+.button { display: inline-flex; align-items: center; justify-content: center; min-height: 42px; border: 1px solid transparent; border-radius: .55rem; padding: .65rem 1rem; font-size: .875rem; font-weight: 700; line-height: 1.25; text-decoration: none; cursor: pointer; transition: background-color .18s ease, color .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease; }
+.button:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(27,35,64,.15); }
+.button:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 3px; }
+.button:disabled { cursor: not-allowed; opacity: .55; }
+.primary { background: var(--navy); color: var(--beige); border-color: var(--navy); }
+.primary:hover:not(:disabled) { background: #303D67; color: var(--off-white); border-color: #303D67; }
+.secondary { background: var(--beige); color: var(--navy); border-color: var(--navy); }
+.secondary:hover:not(:disabled) { background: var(--off-white); color: var(--navy); }

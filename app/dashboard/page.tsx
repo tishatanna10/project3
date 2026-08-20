@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getCareerRecommendations, profileFromJson } from "@/lib/careers/matching";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "./actions";
+import { Button } from "@/components/ui/Button";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -45,22 +46,16 @@ export default async function DashboardPage() {
             <p className="mt-3 text-slate-600">You are signed in as {user.email}.</p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <Link href="/interview" className="rounded-lg border border-indigo-200 px-4 py-2 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-50 focus:outline-none focus:ring-3 focus:ring-indigo-100">
-              Practice interview
-            </Link>
-            <Link href="/resume" className="rounded-lg border border-indigo-200 px-4 py-2 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-50 focus:outline-none focus:ring-3 focus:ring-indigo-100">
-              Analyze resume
-            </Link>
-            <Link href="/chat" className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700 focus:outline-none focus:ring-3 focus:ring-indigo-200">
-              Ask the career assistant
-            </Link>
+            <Button href="/interview" variant="secondary">Practice interview</Button>
+            <Button href="/resume" variant="secondary">Analyze resume</Button>
+            <Button href="/chat">Ask the career assistant</Button>
             <form action={signOut}>
-              <button
+              <Button
                 type="submit"
-                className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 focus:outline-none focus:ring-3 focus:ring-slate-200"
+                variant="secondary"
               >
                 Sign out
-              </button>
+              </Button>
             </form>
           </div>
         </div>

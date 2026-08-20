@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { careers } from "@/lib/supabase/careers/career";
+import { Button } from "@/components/ui/Button";
 
 type Exchange = {
   question: string;
@@ -342,7 +343,7 @@ export default function InterviewPage() {
               <label className="text-sm font-medium text-slate-700 sm:col-span-2">Resume<input type="file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={(event) => setResume(event.target.files?.[0] ?? null)} className="mt-2 block w-full cursor-pointer rounded-lg border border-slate-300 text-sm text-slate-600 file:mr-4 file:border-0 file:bg-indigo-50 file:px-4 file:py-2.5 file:font-semibold file:text-indigo-700" /><span className="mt-2 block text-xs font-normal text-slate-500">PDF or DOCX, up to 5 MB{resume ? ` · ${resume.name}` : ""}</span></label>
               <label className="text-sm font-medium text-slate-700 sm:col-span-2">Job description <span className="font-normal text-slate-500">(optional)</span><textarea value={jobDescription} onChange={(event) => setJobDescription(event.target.value)} rows={5} placeholder="Paste the job description for more targeted questions..." className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2.5 text-slate-900 outline-none placeholder:text-slate-400 focus:border-indigo-500 focus:ring-3 focus:ring-indigo-100" /></label>
               {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 sm:col-span-2" role="alert">{error}</p>}
-              <div className="sm:col-span-2"><button disabled={!resume || !targetRole || isLoading} className="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50">{isLoading ? "Preparing interview..." : "Start interview"}</button></div>
+              <div className="sm:col-span-2"><Button disabled={!resume || !targetRole || isLoading}>{isLoading ? "Preparing interview..." : "Start interview"}</Button></div>
             </form>
           </section>
         ) : (
@@ -366,7 +367,7 @@ function InterviewReport({ report, onRestart }: { report: Report; onRestart: () 
         <ListCard title="Speech patterns observed" items={report.speechPatterns} tone="slate" />
         <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8"><h2 className="text-xl font-bold text-slate-900">Question-by-question feedback</h2><div className="mt-5 space-y-5">{report.perQuestionFeedback.map((item, index) => <article key={`${item.question}-${index}`} className="rounded-xl border border-slate-200 p-5"><p className="font-semibold text-slate-900">{index + 1}. {item.question}</p><p className="mt-3 text-sm leading-6 text-slate-600"><span className="font-semibold text-slate-800">Your answer: </span>{item.answer}</p><p className="mt-3 text-sm leading-6 text-emerald-800"><span className="font-semibold">Worked well: </span>{item.whatWentWell}</p><p className="mt-2 text-sm leading-6 text-amber-800"><span className="font-semibold">Could improve: </span>{item.whatCouldBeBetter}</p><p className="mt-2 text-sm leading-6 text-indigo-800"><span className="font-semibold">Better approach: </span>{item.betterApproach}</p>{item.presencePatterns?.length ? <div className="mt-3 rounded-lg bg-slate-50 p-3 text-sm leading-6 text-slate-700"><span className="font-semibold text-slate-800">Observable presence patterns: </span>{item.presencePatterns.join(" ")}</div> : null}</article>)}</div></section>
         {report.finalReview && <section className="rounded-2xl border border-indigo-200 bg-indigo-50 p-6 shadow-sm sm:p-8"><p className="text-sm font-semibold text-indigo-700">Your key takeaway</p><h2 className="mt-2 text-2xl font-bold text-indigo-950">Final interview review</h2><div className="mt-4 whitespace-pre-line text-sm leading-7 text-indigo-950">{report.finalReview}</div></section>}
-        <button onClick={onRestart} className="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700">Practice another interview</button>
+        <Button onClick={onRestart}>Practice another interview</Button>
       </div>
     </main>
   );
